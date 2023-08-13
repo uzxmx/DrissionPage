@@ -5,7 +5,7 @@
 """
 from json import load, dump
 from pathlib import Path
-from subprocess import Popen
+from subprocess import Popen, DEVNULL
 from tempfile import gettempdir
 from time import perf_counter, sleep
 
@@ -176,7 +176,7 @@ def _run_browser(port, path: str, args) -> Popen:
     arguments = [p, f'--remote-debugging-port={port}']
     arguments.extend(args)
     try:
-        return Popen(arguments, shell=False)
+        return Popen(arguments, shell=False, stdout=DEVNULL, stderr=DEVNULL)
     except FileNotFoundError:
         raise FileNotFoundError('未找到浏览器，请手动指定浏览器可执行文件路径。')
 
