@@ -5,6 +5,7 @@
 """
 from pathlib import Path
 from tempfile import gettempdir, TemporaryDirectory
+import threading
 
 from DrissionPage.commons.tools import port_is_using, clean_folder
 from .options_manage import OptionsManager
@@ -407,7 +408,9 @@ class ChromiumOptions(object):
         return self.save('default')
 
 
+# TODO this doesn't work for multiple processes.
 class PortFinder(object):
+    lock = threading.Lock()
     used_port = []
 
     def __init__(self):
@@ -420,12 +423,13 @@ class PortFinder(object):
         """查找一个可用端口
         :return: 可以使用的端口和用户文件夹路径组成的元组
         """
-        for i in range(9600, 19800):
-            if i in PortFinder.used_port or port_is_using('127.0.0.1', i):
-                continue
+        with PortFinder.lock:
+            for i in range(9600, 19800):
+                if i in PortFinder.used_port or port_is_using('127.0.0.1', i):
+                    continue
 
-            path = TemporaryDirectory(dir=self.tmp_dir)
-            PortFinder.used_port.append(i)
-            return i, path.name
+                path = TemporaryDirectory(dir=self.tmp_dir)
+                PortFinder.used_port.append(i)
+                return i, path.name
 
-        raise OSError('未找到可用端口。')
+            raise OSError('未找到可用端口。')
