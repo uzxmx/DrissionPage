@@ -88,7 +88,7 @@ class SessionPage(BasePage):
     @property
     def html(self):
         """返回页面的html文本"""
-        return self.response.text if self.response else ''
+        return self.response.text if self.response is not None else ''
 
     @property
     def json(self):
