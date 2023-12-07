@@ -248,13 +248,15 @@ class SessionPage(BasePage):
             self._url_available = False
 
         else:
-            if self._response.ok:
-                self._url_available = True
+            self._url_available = True
 
-            else:
-                if show_errmsg:
-                    raise ConnectionError(f'状态码：{self._response.status_code}.')
-                self._url_available = False
+            # if self._response.ok:
+            #     self._url_available = True
+            #
+            # else:
+            #     if show_errmsg:
+            #         raise ConnectionError(f'状态码：{self._response.status_code}.')
+            #     self._url_available = False
 
         return self._url_available
 
@@ -295,7 +297,7 @@ class SessionPage(BasePage):
                 elif mode == 'post':
                     r = self.session.post(url, data=data, **kwargs)
 
-                if r:
+                if r is not None:
                     return set_charset(r), 'Success'
 
             except Exception as e:
